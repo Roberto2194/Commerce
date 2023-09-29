@@ -1,0 +1,45 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <h2>Categories</h2>
+
+    <form action="{% url 'categories' %}" method="post">
+        {% csrf_token %}
+        <select class="form-group form-select-lg mb-3" name="category">
+            <option selected disabled hidden>Choose a Category</option>
+            <option value="Broomstick">Broomstick</option>
+            <option value="Robe">Robe</option>
+            <option value="Book">Book</option>
+            <option value="Wand">Wand</option>
+            <option value="Quill">Quill</option>
+        </select>
+
+        <input class="btn btn-primary" type="submit" value="Submit">
+    </form>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    {% for listing in listings %}
+        <a href="{% url 'listings' listing=listing.id %}" class="card-link" style="color: black;">
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img style="max-height:200px; max-width:400px; height:auto; width:auto;" src="{{ listing.image }}" class="img-fluid rounded-start">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ listing.title }}</h5>
+                            <p class="card-text"><b>Description:</b> {{ listing.description }}</p>
+                            <p class="card-text"><b>Starting Price:</b> ${{ listing.price }}</p>
+                            <p class="card-text"><b>Category:</b> {{ listing.category }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    {% endfor %}
+
+{% endblock %}

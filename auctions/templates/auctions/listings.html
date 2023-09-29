@@ -1,0 +1,99 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <h2>Listing: {{ listing.title }}</h2>
+
+    {% if auction_listing_active %}
+        {% if user.is_authenticated %}
+            {% if in_watchlist %}
+                <span class="badge badge-secondary" style="margin-bottom:10px">Watchlist</span>
+                <form method="post">
+                    {% csrf_token %}
+                    <input class="btn btn-primary" type="submit" value="Remove from Watchlist", name="remove_watchlist">
+                </form>
+            {% else %}
+                <form method="post">
+                    {% csrf_token %}
+                    <input class="btn btn-primary" type="submit" value="Add to Watchlist", name="add_watchlist">
+                </form>
+            {% endif %}
+        {% endif %}
+    {% else %}
+        <h2 style="color:red">This auction has been closed.</h2>
+    {% endif %}
+
+    <div style="margin-top:10px;">
+        <img style="max-height:500px; max-width:600px; height:auto; width:auto; margin-bottom:10px;" src="{{ listing.image }}" class="img-fluid rounded-start">
+        <p>{{ listing.description }}</p>
+
+        {% if bid_value is not None %}
+            <h2>${{ bid_value }}</h2>
+        {% else %}
+            <h2>${{ listing.price }}</h2>
+        {% endif %}
+
+        {% if not auction_listing_active and highest_bidder is not None %}
+            <h2 style="color:green">This auction has been won by: {{ highest_bidder }}!</h2>
+        {% endif %}
+
+        {% if auction_listing_active %}
+            {% if message %}
+                <div>{{ message }}</div>
+            {% endif %}
+
+            {% if current_bidder %}
+                <div>Your bid is the current bid.</div>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input autofocus class="form-control" type="text" name="place_bid" placeholder="Bid">
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="Place Bid">
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div>
+        <br>
+        <h3>Details</h3>
+        <ul>
+            <li>Listed by: {{ listing.user }}</li>
+            <li>Category: {{ listing.category }}</li>
+        </ul>
+        {% if can_close and auction_listing_active %}
+            <form method="post">
+                {% csrf_token %}
+                <input class="btn btn-primary" type="submit" value="Close Auction", name="close_auction">
+            </form>
+        {% endif %}
+    </div>
+
+    <div>
+        <br>
+        <h3>Comments</h3>
+        {% for comment in comments %}
+            <div class="media">
+                <a class="pull-left" href="#"><img style="width:75px; height:75px;"class="media-object" src="https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"></a>
+                <div class="media-body">
+                    <h5 class="media-heading">{{ comment.user }}</h5>
+                    <p>{{ comment.value }}</p>
+                </div>
+            </div>
+        {% endfor %}
+        {% if auction_listing_active %}
+            {% if user.is_authenticated %}
+                <form method="post">
+                    {% csrf_token %}
+                    <textarea style="resize:vertical; width:500px; height:100px; margin-bottom:10px; resize: none;" name="add_comment"></textarea><br>
+                    <input class="btn btn-primary" type="submit" value="Add Comment">
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+
+{% endblock %}

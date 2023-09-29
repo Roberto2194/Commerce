@@ -1,0 +1,8 @@
+body {
+    padding: 10px;
+}
+
+a.card-link {
+    display: block;
+    text-decoration: none;
+}
